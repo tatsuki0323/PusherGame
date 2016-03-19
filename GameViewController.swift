@@ -11,7 +11,7 @@ import QuartzCore
 import SceneKit
 
 class GameViewController:UIViewController {
-    
+    //押す板
     let pushtable = SCNBox(width: 50.0, height: 4.0, length: 80.0, chamferRadius: 0.0)
     let pushtableNode = SCNNode()
     
@@ -21,19 +21,21 @@ class GameViewController:UIViewController {
         super.viewDidLoad()
         
         let scene = SCNScene()
-        scene.physicsWorld.gravity = SCNVector3(x: 0.0, y: -50.0, z: 0.0)
+        //重力の設定
+        scene.physicsWorld.gravity = SCNVector3(x: 0.0, y: -9.8, z: 0.0)
         
         scnView = self.view as? SCNView
         scnView?.scene = scene
+        //背景の色
         scnView?.backgroundColor = UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0)
+        //カメラの移動
         scnView?.allowsCameraControl = false
-        
+        //押す板の動き
         let moveA = SCNAction.moveByX(0, y: 0, z: 20, duration: 8)
         let moveB = SCNAction.moveByX(0, y: 0, z: -20, duration: 8)
         let moveSequence = SCNAction.sequence([moveA,moveB])
         let moveRepeatAction =  SCNAction.repeatActionForever(moveSequence)
         pushtableNode.runAction(moveRepeatAction)
-        
         
         setObject()
         setCamera()
@@ -41,24 +43,15 @@ class GameViewController:UIViewController {
     }
     
     func setObject(){
-        /*
-        let txt = SCNText(string: "TEST", extrusionDepth: 10)
-        txt.chamferRadius = 5 //0<chamfer<extrusion depth
-        txt.firstMaterial!.diffuse.contents  = UIColor.whiteColor()
-        txt.containerFrame = CGRectMake(-200, -150, 400, 200) //on iPad Air Sim in Landscape
-        txt.wrapped = true
-        txt.alignmentMode = kCAAlignmentRight
-        */
-        
-        let titleText = SCNText(string: "メダル落とし", extrusionDepth: 1.0)
-        titleText.font = UIFont(name: "AvenirNext-Heavy", size: 5)
+        //タイトルロゴ
+        let titleText = SCNText(string: "コイン落とし", extrusionDepth: 1.0)
+        titleText.font = UIFont(name: "AvenirNext-Heavy", size: 6)
         titleText.firstMaterial!.diffuse.contents  = UIColor.greenColor()
         let titleNode = SCNNode(geometry: titleText)
-        
-        titleNode.position = SCNVector3(x: -15, y: 40, z: -7)
+        titleNode.position = SCNVector3(x: -18, y: 40, z: -7)
         //titleNode.runAction(SCNAction.rotateByX(0, y: 5, z: 0, duration: 2.5))
         self.scnView?.scene?.rootNode.addChildNode(titleNode)
-        
+        //右の壁
         let rightwall = SCNBox(width: 2.0, height: 20.0, length: 50.0, chamferRadius: 0.0)
         rightwall.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         let rightwallNode = SCNNode()
@@ -68,7 +61,7 @@ class GameViewController:UIViewController {
         rightwallNode.physicsBody = SCNPhysicsBody.staticBody()
         rightwallNode.physicsBody?.physicsShape = SCNPhysicsShape(node: rightwallNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(rightwallNode)
-        
+        //左の壁
         let leftwall = SCNBox(width: 2.0, height: 20.0, length: 50.0, chamferRadius: 0.0)
         leftwall.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
         let leftwallNode = SCNNode()
@@ -78,7 +71,7 @@ class GameViewController:UIViewController {
         leftwallNode.physicsBody = SCNPhysicsBody.staticBody()
         leftwallNode.physicsBody?.physicsShape = SCNPhysicsShape(node: leftwallNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(leftwallNode)
-        
+        //後ろの壁
         let backwall = SCNBox(width: 50.0, height: 17.0, length: 2.0, chamferRadius: 0.0)
         backwall.firstMaterial?.diffuse.contents = UIColor(red: 0.1, green: 1.0, blue: 0.0, alpha: 1.0)
         let backwallNode = SCNNode()
@@ -88,7 +81,7 @@ class GameViewController:UIViewController {
         backwallNode.physicsBody = SCNPhysicsBody.staticBody()
         backwallNode.physicsBody?.physicsShape = SCNPhysicsShape(node: backwallNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(backwallNode)
-        
+        //押す板
         pushtable.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
         
         pushtableNode.geometry = pushtable
@@ -100,16 +93,17 @@ class GameViewController:UIViewController {
         pushtableNode.physicsBody?.physicsShape = SCNPhysicsShape(node: pushtableNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(pushtableNode)
         
-        
-        let generator = SCNBox(width: 50.0, height: 5.0, length: 10.0, chamferRadius: 0.0)//コイン出るとこ
-        generator.firstMaterial?.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.7)//拡散光の色を設定
+        //コイン出るとこ
+        let generator = SCNBox(width: 50.0, height: 5.0, length: 10.0, chamferRadius: 0.0)
+        //拡散光の色を設定
+        generator.firstMaterial?.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.7)
         let generatorNode = SCNNode()
         generatorNode.geometry = generator
         generatorNode.position = SCNVector3(x: 0, y: 30, z: -10)
         generatorNode.name = "generator"
         self.scnView?.scene?.rootNode.addChildNode(generatorNode)
-        
-        let ground = SCNBox(width: 50.0, height: 2.0, length: 50.0, chamferRadius: 0.0)//地面
+        //床
+        let ground = SCNBox(width: 50.0, height: 2.0, length: 50.0, chamferRadius: 0.0)
         ground.firstMaterial?.diffuse.contents = UIColor(red: 0.8, green: 0.8, blue: 0.3, alpha: 1.0)
         let groundNode = SCNNode()
         groundNode.geometry = ground
@@ -158,8 +152,6 @@ class GameViewController:UIViewController {
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        
-        
         if let touch = touches.first{
             let p = touch.locationInView(self.scnView)
             
@@ -175,7 +167,7 @@ class GameViewController:UIViewController {
                         if(geomNode.position.y <= -10){
                             geomNode.removeFromParentNode()
                         }
-                        geomNode.position = SCNVector3(x: Float(p.x-381.5)/20, y:30, z: randValue())
+                        geomNode.position = SCNVector3(x: Float(p.x-100)/20, y:30, z: randValue())
                         geomNode.name = "geometry"
                         /*
                         geomNode.position = SCNVector3(x: 0, y: 30, z: -10)
@@ -227,12 +219,9 @@ class GameViewController:UIViewController {
             let sphere = SCNSphere(radius: 5.0)
             return sphere
         default:
-            let cylinder = SCNCylinder(radius: 3.0, height: 0.4)
-            return cylinder
+            let medal = SCNCylinder(radius: 3.0, height: 0.4)
+            return medal
         }
-        
-        
-        
     }
     
     func colorValue() -> CGFloat{
