@@ -122,10 +122,6 @@ class GameViewController:UIViewController {
         self.scnView?.scene?.rootNode.addChildNode(cameraNode)
         cameraNode.position = SCNVector3(x: 0, y: 50, z: 60)
         cameraNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -0.5)
-        /*
-        cameraNode.position = SCNVector3(x: 0, y: 50, z: 50)
-        cameraNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -0.5)
-        */
     }
     
     func setLight(){
@@ -167,7 +163,15 @@ class GameViewController:UIViewController {
                         if(geomNode.position.y <= -10){
                             geomNode.removeFromParentNode()
                         }
-                        geomNode.position = SCNVector3(x: Float(p.x-100)/20, y:30, z: randValue())
+                        let myBoundSize: CGSize = UIScreen.mainScreen().bounds.size
+                        //print(myBoundSize.width)//414
+                        //print(myBoundSize.height)//736
+                        //コインの落とされる場所
+                        geomNode.position = SCNVector3(x: Float((p.x-myBoundSize.width/2)/((myBoundSize.width/2)/25)), y:30, z: randValue())
+                        /*
+                        print(p.x)
+                        print(p.y)
+                        */
                         geomNode.name = "geometry"
                         /*
                         geomNode.position = SCNVector3(x: 0, y: 30, z: -10)
@@ -207,7 +211,7 @@ class GameViewController:UIViewController {
     }
     */
     
-    
+    //出てくる物体の形を決める関数
     func generateRandomGeometry() -> SCNGeometry{
         let kind = arc4random() % 100
         
