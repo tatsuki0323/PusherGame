@@ -6,15 +6,9 @@
 //  Copyright (c) 2016年 tatsuki kawasaki. All rights reserved.
 //
 
-import UIKit
-import QuartzCore
 import SceneKit
 
 class GameViewController:UIViewController {
-    //押す板
-    let pushtable = SCNBox(width: 50.0, height: 4.0, length: 80.0, chamferRadius: 0.0)
-    let pushtableNode = SCNNode()
-    
     weak var scnView : SCNView?
     
     override func viewDidLoad() {
@@ -30,12 +24,6 @@ class GameViewController:UIViewController {
         scnView?.backgroundColor = UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0)
         //カメラの移動
         scnView?.allowsCameraControl = false
-        //押す板の動き
-        let moveA = SCNAction.moveByX(0, y: 0, z: 20, duration: 8)
-        let moveB = SCNAction.moveByX(0, y: 0, z: -20, duration: 8)
-        let moveSequence = SCNAction.sequence([moveA,moveB])
-        let moveRepeatAction =  SCNAction.repeatActionForever(moveSequence)
-        pushtableNode.runAction(moveRepeatAction)
         
         setObject()
         setCamera()
@@ -51,6 +39,7 @@ class GameViewController:UIViewController {
         titleNode.position = SCNVector3(x: -18, y: 40, z: -7)
         //titleNode.runAction(SCNAction.rotateByX(0, y: 5, z: 0, duration: 2.5))
         self.scnView?.scene?.rootNode.addChildNode(titleNode)
+        
         //右の壁
         let rightwall = SCNBox(width: 2.0, height: 20.0, length: 50.0, chamferRadius: 0.0)
         rightwall.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
@@ -61,6 +50,7 @@ class GameViewController:UIViewController {
         rightwallNode.physicsBody = SCNPhysicsBody.staticBody()
         rightwallNode.physicsBody?.physicsShape = SCNPhysicsShape(node: rightwallNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(rightwallNode)
+        
         //左の壁
         let leftwall = SCNBox(width: 2.0, height: 20.0, length: 50.0, chamferRadius: 0.0)
         leftwall.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
@@ -71,6 +61,7 @@ class GameViewController:UIViewController {
         leftwallNode.physicsBody = SCNPhysicsBody.staticBody()
         leftwallNode.physicsBody?.physicsShape = SCNPhysicsShape(node: leftwallNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(leftwallNode)
+       
         //後ろの壁
         let backwall = SCNBox(width: 50.0, height: 17.0, length: 2.0, chamferRadius: 0.0)
         backwall.firstMaterial?.diffuse.contents = UIColor(red: 0.1, green: 1.0, blue: 0.0, alpha: 1.0)
@@ -81,7 +72,10 @@ class GameViewController:UIViewController {
         backwallNode.physicsBody = SCNPhysicsBody.staticBody()
         backwallNode.physicsBody?.physicsShape = SCNPhysicsShape(node: backwallNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(backwallNode)
+        
         //押す板
+        let pushtable = SCNBox(width: 50.0, height: 4.0, length: 80.0, chamferRadius: 0.0)
+        let pushtableNode = SCNNode()
         pushtable.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
         
         pushtableNode.geometry = pushtable
@@ -93,6 +87,13 @@ class GameViewController:UIViewController {
         pushtableNode.physicsBody?.physicsShape = SCNPhysicsShape(node: pushtableNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(pushtableNode)
         
+        //押す板の動き
+        let moveA = SCNAction.moveByX(0, y: 0, z: 20, duration: 8)
+        let moveB = SCNAction.moveByX(0, y: 0, z: -20, duration: 8)
+        let moveSequence = SCNAction.sequence([moveA,moveB])
+        let moveRepeatAction =  SCNAction.repeatActionForever(moveSequence)
+        pushtableNode.runAction(moveRepeatAction)
+
         //コイン出るとこ
         let generator = SCNBox(width: 50.0, height: 5.0, length: 10.0, chamferRadius: 0.0)
         //拡散光の色を設定
@@ -237,15 +238,15 @@ class GameViewController:UIViewController {
         let rand = -(Float(arc4random() % 150))
         return rand / 10
     }
-    
+    //回転に対応するかどうか
     override func shouldAutorotate() -> Bool {
-        return true
+        return false
     }
-    
+    //ステータスバーを非表示にする
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
-    //画面の向きを固定する関数
+    
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
             return .AllButUpsideDown
