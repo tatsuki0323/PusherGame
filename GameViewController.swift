@@ -37,12 +37,12 @@ class GameViewController:UIViewController {
         titleText.firstMaterial!.diffuse.contents  = UIColor.greenColor()
         let titleNode = SCNNode(geometry: titleText)
         titleNode.position = SCNVector3(x: -18, y: 40, z: -7)
-        //titleNode.runAction(SCNAction.rotateByX(0, y: 5, z: 0, duration: 2.5))
         self.scnView?.scene?.rootNode.addChildNode(titleNode)
         
         //右の壁
         let rightwall = SCNBox(width: 2.0, height: 20.0, length: 50.0, chamferRadius: 0.0)
         rightwall.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        
         let rightwallNode = SCNNode()
         rightwallNode.geometry = rightwall
         rightwallNode.position = SCNVector3(x: 26, y: 11, z: 0)
@@ -54,6 +54,7 @@ class GameViewController:UIViewController {
         //左の壁
         let leftwall = SCNBox(width: 2.0, height: 20.0, length: 50.0, chamferRadius: 0.0)
         leftwall.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+        
         let leftwallNode = SCNNode()
         leftwallNode.geometry = leftwall
         leftwallNode.position = SCNVector3(x: -26, y: 11, z: 0)
@@ -82,27 +83,27 @@ class GameViewController:UIViewController {
         pushtableNode.position = SCNVector3(x: 0, y: 2, z: -50)
         pushtableNode.name = "pushtable"
         pushtableNode.physicsBody = SCNPhysicsBody.kinematicBody()
-        pushtableNode.physicsBody?.friction = 0.8
-        pushtableNode.physicsBody?.restitution = 0.0001
+        pushtableNode.physicsBody?.friction = 1.0
+        pushtableNode.physicsBody?.restitution = 0.0
         pushtableNode.physicsBody?.physicsShape = SCNPhysicsShape(node: pushtableNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(pushtableNode)
         
         //押す板の動き
-        let moveA = SCNAction.moveByX(0, y: 0, z: 20, duration: 8)
-        let moveB = SCNAction.moveByX(0, y: 0, z: -20, duration: 8)
+        let moveA = SCNAction.moveByX(0, y: 0, z: 18, duration: 8)
+        let moveB = SCNAction.moveByX(0, y: 0, z: -18, duration: 8)
         let moveSequence = SCNAction.sequence([moveA,moveB])
         let moveRepeatAction =  SCNAction.repeatActionForever(moveSequence)
         pushtableNode.runAction(moveRepeatAction)
 
         //コイン出るとこ
         let generator = SCNBox(width: 50.0, height: 5.0, length: 10.0, chamferRadius: 0.0)
-        //拡散光の色を設定
         generator.firstMaterial?.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.7)
         let generatorNode = SCNNode()
         generatorNode.geometry = generator
         generatorNode.position = SCNVector3(x: 0, y: 30, z: -10)
         generatorNode.name = "generator"
         self.scnView?.scene?.rootNode.addChildNode(generatorNode)
+        
         //床
         let ground = SCNBox(width: 50.0, height: 2.0, length: 50.0, chamferRadius: 0.0)
         ground.firstMaterial?.diffuse.contents = UIColor(red: 0.8, green: 0.8, blue: 0.3, alpha: 1.0)
@@ -110,8 +111,8 @@ class GameViewController:UIViewController {
         groundNode.geometry = ground
         groundNode.position = SCNVector3(x: 0, y: 0, z: 0)
         groundNode.name = "ground"
-        groundNode.physicsBody?.restitution = 0.0001
-        groundNode.physicsBody?.friction = 0.8
+        groundNode.physicsBody?.restitution = 0.0
+        groundNode.physicsBody?.friction =  1.0
         groundNode.physicsBody = SCNPhysicsBody.kinematicBody()
         groundNode.physicsBody?.physicsShape = SCNPhysicsShape(node: groundNode, options: nil)
         self.scnView?.scene?.rootNode.addChildNode(groundNode)
@@ -174,43 +175,20 @@ class GameViewController:UIViewController {
                         print(p.y)
                         */
                         geomNode.name = "geometry"
-                        /*
-                        geomNode.position = SCNVector3(x: 0, y: 30, z: -10)
-                        geomNode.name = "geometry"
-                        */
                         geomNode.physicsBody = SCNPhysicsBody.dynamicBody()
                         //geomNode.physicsBody?.contactTestBitMask = 0
                         //geomNode.physicsBody?.categoryBitMask = 1
                         //geomNode.physicsBody?.collisionBitMask = 1
-                        geomNode.physicsBody?.friction = 0.8
+                        geomNode.physicsBody?.friction = 1.0
                         geomNode.physicsBody?.velocity = SCNVector3(x:0,y:-50,z:0)
-                        geomNode.physicsBody?.restitution = 0.0001
+                        geomNode.physicsBody?.restitution = 0.0
                         geomNode.physicsBody?.physicsShape = SCNPhysicsShape(node: geomNode, options: nil)
                         self.scnView?.scene?.rootNode.addChildNode(geomNode)
                     }
-                    /*
-                    else if result?.name == "geometry"{
-                    result!.runAction(SCNAction.sequence([
-                    SCNAction.fadeOutWithDuration(0.5),
-                    SCNAction.removeFromParentNode()
-                    ]))
-                    }
-                    */
                 }
             }
         }
     }
-    
-    /*
-    func didBeginContact(contact: SCNPhysicsContact ) {
-    if (contact.nodeA == "geomNode" ||
-    contact.nodeB == "geomNode") &&
-    (contact.nodeA == "pushtableNode" ||
-    contact.nodeB == "pushtableNode" ){
-    pushtableNode.position.y + 20
-    }
-    }
-    */
     
     //出てくる物体の形を決める関数
     func generateRandomGeometry() -> SCNGeometry{
@@ -228,12 +206,13 @@ class GameViewController:UIViewController {
             return medal
         }
     }
-    
+    //色をランダムに生成するための関数
     func colorValue() -> CGFloat{
         let rand = CGFloat(arc4random() % 100)
         return rand / 100
     }
     
+    //いい感じのとこにコイン落とすための関数
     func randValue() -> Float{
         let rand = -(Float(arc4random() % 150))
         return rand / 10
